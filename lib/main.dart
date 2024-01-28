@@ -1,3 +1,4 @@
+import 'package:bloc_weather_app/repository/weather_repository.dart';
 import 'package:bloc_weather_app/weather/cubit/weather_cubit_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,18 +14,34 @@ class MyWeatherApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<WeatherCubitCubit>(
-          create: (_) => WeatherCubitCubit(),
+    return RepositoryProvider(
+      create: (context) => WeatherRepository(),
+      // for one instance of repository to be maintained throughout the widget tree
+      // whereever in the widget tree this repo will be needed to call functions from or something,
+      // here at the top , we will provide this single instance of WeatherRepository
+      // to all the BlocProviders, so that one instance is used not multiple.
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<WeatherCubitCubit>(
+            create: (ctx) => WeatherCubitCubit(
+              weatherRepository: ctx.read<WeatherRepository>(),
+              // sending already created instance of repository.
+            ),
+          ),
+        ],
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+            textTheme: TextTheme(
+              headlineSmall: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          onGenerateRoute: appRoutes.onGeneratedRoute,
         ),
-      ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        onGenerateRoute: appRoutes.getRoutes,
       ),
     );
   }

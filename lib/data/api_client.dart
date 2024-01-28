@@ -32,7 +32,7 @@ class ApiClient {
       '/v1/search',
       {
         'name': city,
-        'count': 1,
+        'count': '1',
       },
     );
 
@@ -49,7 +49,7 @@ class ApiClient {
     final results = response['results'] as List;
 
     if (results.isEmpty) throw LocationNotFoundFailure();
-
+    print('################${results.first} ################\n\n\n\n');
     return Location.fromMap(results.first as Map<String, dynamic>);
   }
 
@@ -59,26 +59,39 @@ class ApiClient {
       _baseUrlWeather,
       'v1/forecast',
       {
-        'latitude': latitude,
-        'longitude': longitude,
-        'current_weather': true,
+        'latitude': '$latitude',
+        'longitude': '$longitude',
+        'current_weather': 'true',
       },
     );
 
-    final Response weatherResponse = await _httpClient.get(weatherRequest);
+    try {
+      // print('######### calling HTTP GET ##########');
+      final Response weatherResponse = await _httpClient.get(weatherRequest);
+      // print('######### called HTTP GET ##########');
 
-    if (weatherResponse.statusCode != 200) throw FetchWeatherFailure();
+      if (weatherResponse.statusCode != 200) throw FetchWeatherFailure();
 
-    final weatherResult = json.decode(weatherResponse.body) as Map;
+      final weatherResult = json.decode(weatherResponse.body) as Map;
+      // print('############   decoded json   #############\n\n');
 
-    if (!weatherResult.containsKey('current_weather')) {
-      throw WeatherNotFoundFailure();
+      if (!weatherResult.containsKey('current_weather')) {
+        throw WeatherNotFoundFailure();
+      }
+
+      final finalWeatherResult = weatherResult['current_weather'] as Map;
+      // print('############   fetched weatherResult   #############\n\n');
+      // print('############   $finalWeatherResult   #############\n\n');
+      if (finalWeatherResult.isEmpty) throw WeatherNotFoundFailure();
+      // print('############   ${finalWeatherResult['temperature']}   #############\n\n');
+      // print('############   ${finalWeatherResult['weathercode']}   #############\n\n');
+
+      // print('############   sending to repository   #############\n\n');
+      return Weather.fromMap(finalWeatherResult as Map<String, dynamic>);
+    } catch (error) {
+      print('############   Error in api client :   #############\n\n');
+      print('############   $error   #############\n\n');
+      throw FetchWeatherFailure();
     }
-
-    final finalWeatherResult = weatherResult['current_weather'] as Map;
-
-    if (finalWeatherResult.isEmpty) throw WeatherNotFoundFailure();
-
-    return Weather.fromMap(finalWeatherResult as Map<String, dynamic>);
   }
 }

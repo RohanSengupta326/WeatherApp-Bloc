@@ -22,11 +22,12 @@ class WeatherRepository {
       return WeatherRepositoryModel(
         location: locationResponse.name,
         temperature: weatherResponse.temperature,
-        weatherCondition: weatherResponse.weatherCode.toInt().toCondition,
+        weatherCondition: weatherResponse.weathercode.toInt().toCondition,
         // converting weatherCode int to WeatherCondition type with int extension below.
       );
     } catch (error) {
-      throw error;
+      print('######### ERROR in WeatherRepository  ##########');
+      throw Exception();
     }
   }
 }

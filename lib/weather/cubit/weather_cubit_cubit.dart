@@ -7,8 +7,9 @@ import 'package:meta/meta.dart';
 part 'weather_cubit_state.dart';
 
 class WeatherCubitCubit extends Cubit<WeatherCubitState> {
-  WeatherCubitCubit() : super(WeatherCubitState());
-  final WeatherRepository _weatherRepository = WeatherRepository();
+  WeatherCubitCubit({required this.weatherRepository})
+      : super(WeatherCubitState());
+  final WeatherRepository weatherRepository;
 
   Future<void> fetchWeather(String? city) async {
     if (city == null || city.isEmpty) return;
@@ -17,7 +18,7 @@ class WeatherCubitCubit extends Cubit<WeatherCubitState> {
 
     try {
       final weather = WeatherStateModel.fromWeatherRespository(
-        await _weatherRepository.fetchWeatherData(city),
+        await weatherRepository.fetchWeatherData(city),
       );
       final units = state.temperatureUnits;
       final value = units.isFahrenheit
@@ -33,7 +34,7 @@ class WeatherCubitCubit extends Cubit<WeatherCubitState> {
           ),
         ),
       );
-    } on Exception {
+    } catch (error) {
       emit(state.copyWith(status: WeatherStatus.failure));
     }
   }
@@ -47,7 +48,7 @@ class WeatherCubitCubit extends Cubit<WeatherCubitState> {
 
     try {
       final weather = WeatherStateModel.fromWeatherRespository(
-        await _weatherRepository
+        await weatherRepository
             .fetchWeatherData(state.weatherStateModel.location),
       );
       final units = state.temperatureUnits;
@@ -64,7 +65,7 @@ class WeatherCubitCubit extends Cubit<WeatherCubitState> {
           ),
         ),
       );
-    } on Exception {
+    } catch (error) {
       emit(state.copyWith(status: WeatherStatus.failure));
     }
   }

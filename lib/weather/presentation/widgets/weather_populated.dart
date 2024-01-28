@@ -18,12 +18,14 @@ class WeatherPopulated extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        RefreshIndicator(
-          onRefresh: onRefresh,
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            clipBehavior: Clip.none,
-            child: Center(
+        _WeatherBackground(),
+        Align(
+          alignment: Alignment.center,
+          child: RefreshIndicator(
+            onRefresh: onRefresh,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              clipBehavior: Clip.none,
               child: Column(
                 children: [
                   const SizedBox(height: 48),
@@ -77,6 +79,53 @@ extension on WeatherCondition {
       case WeatherCondition.unknown:
         return '❓';
     }
+  }
+}
+
+class _WeatherBackground extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final primaryColor = Theme.of(context).colorScheme.primaryContainer;
+
+    return SizedBox.expand(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            // at 25% it will take primary color
+            // at 75% screen, it will take primarycolor's 10% brightness
+            // and so on.
+            stops: const [0.25, 0.75, 0.90, 1],
+            colors: [
+              primaryColor,
+              primaryColor.brighten(),
+              primaryColor.brighten(33),
+              primaryColor.brighten(50),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+extension on Color {
+  Color brighten([int percent = 10]) {
+    // if condition is false assert , gives error.
+    assert(
+      (percent >= 1) && (percent <= 100),
+      'percentage must be between 1 and 100',
+    );
+    // brightness chaning based on percentage, meaning adjusting rgb values.
+    // based on brightness factor.
+    final p = percent / 100;
+    return Color.fromARGB(
+      alpha,
+      red + ((255 - red) * p).round(),
+      green + ((255 - green) * p).round(),
+      blue + ((255 - blue) * p).round(),
+    );
   }
 }
 

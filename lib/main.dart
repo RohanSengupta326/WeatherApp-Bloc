@@ -1,4 +1,5 @@
 import 'package:bloc_weather_app/repository/weather_repository.dart';
+import 'package:bloc_weather_app/theme/cubit/theme_cubit.dart';
 import 'package:bloc_weather_app/weather/cubit/weather_cubit_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,19 +29,27 @@ class MyWeatherApp extends StatelessWidget {
               // sending already created instance of repository.
             ),
           ),
-        ],
-        child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-            textTheme: TextTheme(
-              headlineSmall: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+          BlocProvider<ThemeCubit>(
+            create: (ctx) => ThemeCubit(),
           ),
-          onGenerateRoute: appRoutes.onGeneratedRoute,
+        ],
+        child: BlocBuilder<ThemeCubit, Color>(
+          builder: (context, stateColor) {
+            return MaterialApp(
+              debugShowCheckedModeBanner: false,
+              theme: ThemeData(
+                appBarTheme: AppBarTheme(
+                    backgroundColor: stateColor.withAlpha(80),
+                    titleTextStyle: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 20,
+                    )),
+                colorScheme: ColorScheme.fromSeed(seedColor: stateColor),
+              ),
+              onGenerateRoute: appRoutes.onGeneratedRoute,
+            );
+          },
         ),
       ),
     );

@@ -11,12 +11,16 @@ enum WeatherCondition {
 
 class WeatherRepositoryModel {
   WeatherRepositoryModel({
+    required this.time,
     required this.location,
     required this.temperature,
     required this.weatherCondition,
+    required this.is_day,
   });
 
+  final String time;
   final String location;
   final double temperature;
   final WeatherCondition weatherCondition;
+  final int is_day;
 }

@@ -1,7 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:bloc_weather_app/repository/models/weather_repository_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:intl/intl.dart';
+
+import 'package:bloc_weather_app/repository/models/weather_repository_model.dart';
 
 enum TemperatureUnits { fahrenheit, celcius }
 
@@ -15,12 +17,14 @@ class WeatherStateModel extends Equatable {
   final WeatherCondition weatherCondition;
   final DateTime lastUpdated;
   final String location;
+  final int is_day;
 
   WeatherStateModel({
     required this.temperature,
     required this.weatherCondition,
     required this.lastUpdated,
     required this.location,
+    required this.is_day,
   });
 
   factory WeatherStateModel.fromWeatherRespository(
@@ -30,6 +34,7 @@ class WeatherStateModel extends Equatable {
       weatherCondition: weatherRepositoryModel.weatherCondition,
       lastUpdated: DateTime.now(),
       location: weatherRepositoryModel.location,
+      is_day: weatherRepositoryModel.is_day,
     );
   }
 
@@ -38,6 +43,7 @@ class WeatherStateModel extends Equatable {
     weatherCondition: WeatherCondition.unknown,
     lastUpdated: DateTime(0),
     location: '--',
+    is_day: 0,
   );
 
   WeatherStateModel copyWith({
@@ -45,12 +51,14 @@ class WeatherStateModel extends Equatable {
     WeatherCondition? weatherCondition,
     DateTime? lastUpdated,
     String? location,
+    int? is_day,
   }) {
     return WeatherStateModel(
       temperature: temperature ?? this.temperature,
       weatherCondition: weatherCondition ?? this.weatherCondition,
       lastUpdated: lastUpdated ?? this.lastUpdated,
       location: location ?? this.location,
+      is_day: is_day ?? this.is_day,
     );
   }
 
@@ -61,5 +69,6 @@ class WeatherStateModel extends Equatable {
         weatherCondition,
         lastUpdated,
         location,
+        is_day,
       ];
 }

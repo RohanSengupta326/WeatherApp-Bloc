@@ -20,9 +20,11 @@ class WeatherRepository {
       );
 
       return WeatherRepositoryModel(
+        time: weatherResponse.time,
         location: locationResponse.name,
         temperature: weatherResponse.temperature,
         weatherCondition: weatherResponse.weathercode.toInt().toCondition,
+        is_day: weatherResponse.is_day,
         // converting weatherCode int to WeatherCondition type with int extension below.
       );
     } catch (error) {

@@ -2,16 +2,24 @@
 import 'dart:convert';
 
 class Weather {
-  Weather({required this.temperature, required this.weathercode});
-
+  final String time;
   final double temperature;
+  final int is_day;
   final double weathercode;
+
+  Weather({
+    required this.time,
+    required this.temperature,
+    required this.is_day,
+    required this.weathercode,
+  });
   //
 
-  // JSON seriealization & deserialization
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
+      'time': time,
       'temperature': temperature,
+      'is_day': is_day,
       'weathercode': weathercode,
     };
   }
@@ -22,10 +30,11 @@ class Weather {
 // model,
 // else if your local model key is name is different, then you have to mention the actual json key while fetching like this : @JsonKey(name: 'weathercode')
 // by using json_annotation & other packages.
-
   factory Weather.fromMap(Map<String, dynamic> map) {
     return Weather(
+      time: map['time'] as String,
       temperature: double.parse(map['temperature'].toString()),
+      is_day: map['is_day'] as int,
       weathercode: double.parse(map['weathercode'].toString()),
     );
   }

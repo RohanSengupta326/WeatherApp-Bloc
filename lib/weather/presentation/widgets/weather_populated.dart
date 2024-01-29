@@ -56,7 +56,7 @@ class WeatherPopulated extends StatelessWidget {
                       children: [
                         _WeatherIcon(
                           condition: weather.weatherCondition,
-                          lastUpdated: weather.lastUpdated,
+                          is_day: weather.is_day,
                         ),
                         Text(
                           weather.formattedTemperature(units),
@@ -84,29 +84,28 @@ class WeatherPopulated extends StatelessWidget {
 class _WeatherIcon extends StatelessWidget {
   _WeatherIcon({
     required this.condition,
-    required this.lastUpdated,
+    required this.is_day,
   });
 
   static const _iconSize = 60.0;
 
   final WeatherCondition condition;
-  final DateTime lastUpdated;
+  final int is_day;
 
   @override
   Widget build(BuildContext context) {
     return Text(
-      condition.toEmoji(lastUpdated, condition),
+      condition.toEmoji(is_day, condition),
       style: const TextStyle(fontSize: _iconSize),
     );
   }
 }
 
 extension on WeatherCondition {
-  String toEmoji(DateTime lastUpdated, WeatherCondition weatherCondition) {
-    if (weatherCondition == WeatherCondition.clear && (lastUpdated.hour < 17)) {
+  String toEmoji(int is_day, WeatherCondition weatherCondition) {
+    if (weatherCondition == WeatherCondition.clear && is_day == 1) {
       return '☀️';
-    } else if (weatherCondition == WeatherCondition.clear &&
-        (lastUpdated.hour > 17)) {
+    } else if (weatherCondition == WeatherCondition.clear && is_day == 0) {
       return '🌙';
     } else if (weatherCondition == WeatherCondition.rainy) {
       return '🌧️';

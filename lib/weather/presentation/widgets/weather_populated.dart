@@ -19,27 +19,59 @@ class WeatherPopulated extends StatelessWidget {
     return Stack(
       children: [
         _WeatherBackground(),
-        Align(
-          alignment: Alignment.center,
-          child: RefreshIndicator(
-            onRefresh: onRefresh,
+        RefreshIndicator(
+          color: Theme.of(context).primaryColor,
+          onRefresh: onRefresh,
+          child: Align(
+            alignment: Alignment.topCenter,
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               clipBehavior: Clip.none,
-              child: Column(
-                children: [
-                  const SizedBox(height: 48),
-                  _WeatherIcon(condition: weather.weatherCondition),
-                  Text(
-                    weather.location,
-                  ),
-                  Text(
-                    weather.formattedTemperature(units),
-                  ),
-                  Text(
-                    '''Last Updated at ${TimeOfDay.fromDateTime(weather.lastUpdated).format(context)}''',
-                  ),
-                ],
+              child: Container(
+                margin: EdgeInsets.only(top: 100),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 48),
+                    Text(
+                      weather.location,
+                      style:
+                          Theme.of(context).textTheme.headlineMedium!.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                    ),
+                    Text(
+                      '''Last Updated at ${TimeOfDay.fromDateTime(weather.lastUpdated).format(context)}''',
+                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.normal,
+                            fontSize: 15,
+                          ),
+                    ),
+                    SizedBox(
+                      height: 100,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _WeatherIcon(
+                          condition: weather.weatherCondition,
+                          lastUpdated: weather.lastUpdated,
+                        ),
+                        Text(
+                          weather.formattedTemperature(units),
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall!
+                              .copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
               ),
             ),
           ),
@@ -50,34 +82,40 @@ class WeatherPopulated extends StatelessWidget {
 }
 
 class _WeatherIcon extends StatelessWidget {
-  const _WeatherIcon({required this.condition});
+  _WeatherIcon({
+    required this.condition,
+    required this.lastUpdated,
+  });
 
-  static const _iconSize = 75.0;
+  static const _iconSize = 60.0;
 
   final WeatherCondition condition;
+  final DateTime lastUpdated;
 
   @override
   Widget build(BuildContext context) {
     return Text(
-      condition.toEmoji,
+      condition.toEmoji(lastUpdated, condition),
       style: const TextStyle(fontSize: _iconSize),
     );
   }
 }
 
 extension on WeatherCondition {
-  String get toEmoji {
-    switch (this) {
-      case WeatherCondition.clear:
-        return '☀️';
-      case WeatherCondition.rainy:
-        return '🌧️';
-      case WeatherCondition.cloudy:
-        return '☁️';
-      case WeatherCondition.snowy:
-        return '🌨️';
-      case WeatherCondition.unknown:
-        return '❓';
+  String toEmoji(DateTime lastUpdated, WeatherCondition weatherCondition) {
+    if (weatherCondition == WeatherCondition.clear && (lastUpdated.hour < 17)) {
+      return '☀️';
+    } else if (weatherCondition == WeatherCondition.clear &&
+        (lastUpdated.hour > 17)) {
+      return '🌙';
+    } else if (weatherCondition == WeatherCondition.rainy) {
+      return '🌧️';
+    } else if (weatherCondition == WeatherCondition.cloudy) {
+      return '☁️';
+    } else if (weatherCondition == WeatherCondition.snowy) {
+      return '🌨️';
+    } else {
+      return '❓';
     }
   }
 }
@@ -85,11 +123,13 @@ extension on WeatherCondition {
 class _WeatherBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final primaryColor = Theme.of(context).colorScheme.primaryContainer;
+    Color primaryColor = Theme.of(context).primaryColor;
+    // print('############   PRIMARY COLOR : $primaryColor   #############\n\n');
 
     return SizedBox.expand(
       child: DecoratedBox(
         decoration: BoxDecoration(
+          // border: Border.all(width: 5, color: Colors.purple),
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -121,7 +161,7 @@ extension on Color {
     // based on brightness factor.
     final p = percent / 100;
     return Color.fromARGB(
-      alpha,
+      255,
       red + ((255 - red) * p).round(),
       green + ((255 - green) * p).round(),
       blue + ((255 - blue) * p).round(),

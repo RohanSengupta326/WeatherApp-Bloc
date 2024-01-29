@@ -35,17 +35,23 @@ class MyWeatherApp extends StatelessWidget {
         ],
         child: BlocBuilder<ThemeCubit, Color>(
           builder: (context, stateColor) {
+            // print('############   REBUILDING MATERIALAPP   #############\n\n');
             return MaterialApp(
               debugShowCheckedModeBanner: false,
               theme: ThemeData(
                 appBarTheme: AppBarTheme(
-                    backgroundColor: stateColor.withAlpha(80),
-                    titleTextStyle: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20,
-                    )),
-                colorScheme: ColorScheme.fromSeed(seedColor: stateColor),
+                  iconTheme: IconThemeData(color: Colors.white),
+                  backgroundColor: stateColor,
+                  titleTextStyle: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 20,
+                  ),
+                ),
+                primaryColor: stateColor,
+                colorScheme: ColorScheme.fromSeed(
+                  seedColor: stateColor,
+                ),
               ),
               onGenerateRoute: appRoutes.onGeneratedRoute,
             );

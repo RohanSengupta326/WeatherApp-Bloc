@@ -78,7 +78,7 @@ class WeatherCubitCubit extends Cubit<WeatherCubitState> {
     final value = state.weatherStateModel;
     final temperatureValue = value.temperature;
 
-    if (state.weatherStateModel != WeatherStateModel.empty) {
+    if (value != WeatherStateModel.empty) {
       final changedUnit = units.isFahrenheit
           ? TemperatureUnits.celcius
           : TemperatureUnits.fahrenheit;

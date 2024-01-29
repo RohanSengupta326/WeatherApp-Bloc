@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class ThemeCubit extends Cubit<Color> {
   ThemeCubit() : super(defaultColor);
 
-  static const defaultColor = Colors.indigoAccent;
+  static Color defaultColor = Color(0xff3444a0);
 
   void onWeatherChange(WeatherCondition? weatherCondition) {
     if (weatherCondition != null) {
@@ -19,13 +19,13 @@ extension on WeatherCondition {
   Color get toColor {
     switch (this) {
       case WeatherCondition.clear:
-        return Colors.indigoAccent.shade700;
+        return Color.fromARGB(255, 90, 115, 252);
       case WeatherCondition.snowy:
-        return Colors.indigoAccent.shade200;
+        return Color.fromARGB(255, 34, 208, 162);
       case WeatherCondition.cloudy:
-        return Colors.indigoAccent.shade400;
+        return Color.fromARGB(255, 17, 169, 224);
       case WeatherCondition.rainy:
-        return Colors.indigoAccent.shade700;
+        return Color.fromARGB(255, 240, 193, 37);
       case WeatherCondition.unknown:
         return ThemeCubit.defaultColor;
     }

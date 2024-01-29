@@ -20,61 +20,56 @@ class WeatherScreen extends StatefulWidget {
 class _WeatherScreenState extends State<WeatherScreen> {
   @override
   Widget build(BuildContext context) {
-    final ThemeData themeData = Theme.of(context);
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(
           'Bloc-WeatherApp',
         ),
-        // actions: [
-        //   IconButton(
-        //     icon: const Icon(Icons.settings),
-        //     onPressed: () {
-        //       Navigator.of(context).push<void>(
-        //         SettingsPage.route(context.read<WeatherCubit>()),
-        //       );
-        //     },
-        //   ),
-        // ],
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.settings,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.of(context).pushNamed(
+                '/settings'
+              );
+            },
+          ),
+        ],
       ),
       body: Center(
-        child: SizedBox(
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.red),
-            ),
-            child: BlocConsumer<WeatherCubitCubit, WeatherCubitState>(
-              builder: (context, state) {
-                switch (state.status) {
-                  case WeatherStatus.initial:
-                    return const WeatherEmpty();
-                  case WeatherStatus.loading:
-                    return const WeatherLoading();
-                  case WeatherStatus.success:
-                    return WeatherPopulated(
-                      weather: state.weatherStateModel,
-                      units: state.temperatureUnits,
-                      onRefresh: () {
-                        return context
-                            .read<WeatherCubitCubit>()
-                            .refreshWeather();
-                      },
-                    );
-                  case WeatherStatus.failure:
-                    return const WeatherError();
-                }
-              },
-              // to call change theme in ThemeCubit. and reflect in MaterialApp theme.
-              listener: (BuildContext buildContext,
-                  WeatherCubitState weatherCubitState) {
-                if (weatherCubitState.status.isSuccess) {
-                  buildContext.read<ThemeCubit>().onWeatherChange(
-                      weatherCubitState.weatherStateModel.weatherCondition);
-                }
-              },
-            ),
-          ),
+        child: BlocConsumer<WeatherCubitCubit, WeatherCubitState>(
+          // to call change theme in ThemeCubit. and reflect in MaterialApp theme.
+          listener:
+              (BuildContext buildContext, WeatherCubitState weatherCubitState) {
+            // print('############   CALLING THEMECHANGE   #############\n\n');
+            if (weatherCubitState.status.isSuccess) {
+              buildContext.read<ThemeCubit>().onWeatherChange(
+                  weatherCubitState.weatherStateModel.weatherCondition);
+            }
+          },
+          builder: (context, state) {
+            // print('############   REBUILDING MAIN SCREEN   #############\n\n');
+            switch (state.status) {
+              case WeatherStatus.initial:
+                return const WeatherEmpty();
+              case WeatherStatus.loading:
+                return const WeatherLoading();
+              case WeatherStatus.success:
+                return WeatherPopulated(
+                  weather: state.weatherStateModel,
+                  units: state.temperatureUnits,
+                  onRefresh: () {
+                    return context.read<WeatherCubitCubit>().refreshWeather();
+                  },
+                );
+              case WeatherStatus.failure:
+                return const WeatherError();
+            }
+          },
         ),
       ),
       floatingActionButton: FloatingActionButton(
